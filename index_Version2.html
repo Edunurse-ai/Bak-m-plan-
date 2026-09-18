@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hemşirelik Bakım Planı</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-alt: #eef4ff;
+      --text: #1d2433;
+      --muted: #667085;
+      --line: #dfe7f5;
+      --primary: #1c5ca8;
+      --primary-strong: #123f7c;
+      --primary-soft: #eaf2ff;
+      --success: #1f8a5b;
+      --success-soft: #eafaf3;
+      --warning: #b66a00;
+      --warning-soft: #fff4e5;
+      --danger: #b42318;
+      --danger-soft: #fef3f2;
+      --shadow: 0 14px 38px rgba(17, 36, 69, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      color: var(--text);
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
+      color: #fff;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: clamp(1rem, 1.5vw, 1.4rem);
+      line-height: 1.1;
+    }
+
+    .brand-sub {
+      opacity: 0.8;
+      font-size: 0.78rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 11px 16px;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary {
+      background: #fff;
+      color: var(--primary-strong);
+    }
+    .btn.secondary {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .btn.ghost {
+      background: var(--surface);
+      color: var(--primary);
+      border: 1px solid var(--line);
+    }
+    .btn.success {
+      background: var(--success);
+      color: #fff;
+    }
+    .btn.warn {
+      background: var(--warning);
+      color: #fff;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 22px 0 10px;
+    }
+
+    .tab-btn {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 10px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 10px 22px rgba(28, 92, 168, 0.21);
+    }
+
+    .panel {
+      display: none;
+      animation: fadeIn 0.22s ease;
+    }
+
+    .panel.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    main {
+      padding: 6px 0 48px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 1.12rem;
+      color: var(--primary);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      border: 1px solid rgba(28,92,168,0.12);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .grid.wide {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--surface-alt);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 12px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(28,92,168,0.45);
+      box-shadow: 0 0 0 3px rgba(28,92,168,0.08);
+    }
+
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .subhead {
+      margin: 20px 0 12px;
+      padding-left: 10px;
+      border-left: 3px solid var(--primary);
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .row-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .toggle-row, .check-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .toggle-row label, .check-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .toggle-row input, .check-row input {
+      width: auto;
+      accent-color: var(--primary);
+    }
+
+    .diag-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .diag-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .diag-item input {
+      width: auto;
+      accent-color: var(--primary);
+    }
+
+    .diag-item.selected {
+      border-color: rgba(28,92,168,0.5);
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .domain-group {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .domain-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface-alt);
+      padding: 12px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .domain-head .meta {
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .domain-body {
+      display: none;
+      padding: 12px;
+    }
+
+    .domain-group.open .domain-body {
+      display: block;
+    }
+
+    .selected-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      border: 1px solid rgba(28,92,168,0.12);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .tag button {
+      border: none;
+      background: transparent;
+      color: var(--primary);
+      font-weight: 900;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .plan-block {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .plan-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
+      color: #fff;
+    }
+
+    .plan-head h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .plan-head small {
+      opacity: 0.82;
+      font-size: 0.72rem;
+    }
+
+    .plan-body {
+      padding: 18px;
+    }
+
+    .group-label {
+      display: inline-block;
+      margin: 10px 0 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .intervention-list, .eval-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .intervention-item, .eval-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .intervention-item textarea, .eval-item textarea {
+      flex: 1;
+      min-height: 72px;
+    }
+
+    .score-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .score-box strong {
+      font-size: 1.02rem;
+      color: var(--primary);
+    }
+
+    .summary-box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(180deg, #fff, #fafcff);
+      padding: 18px;
+    }
+
+    .summary-box h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      color: var(--primary);
+      font-size: 1rem;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .summary-item {
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .summary-item .label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .summary-item .value {
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding: 24px 10px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      background: #fcfdff;
+    }
+
+    .save-indicator {
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      color: var(--success);
+      font-weight: 700;
+      font-size: 0.75rem;
+    }
+
+    .save-indicator.show {
+      opacity: 1;
+    }
+
+    .print-area {
+      display: none;
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .header-actions {
+        width: 100%;
+      }
+      .header-actions .btn {
+        flex: 1;
+      }
+      .card { padding: 17px; }
+      .intervention-item, .eval-item {
+        flex-direction: column;
+      }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .topbar, .tabs, .no-print { display: none !important; }
+      .container, .card, .plan-block { width: 100%; max-width: none; }
+      .print-area {
+        display: block !important;
+        padding: 24px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">+</div>
+        <div>
+          <div class="brand-title">Hemşirelik Bakım Planı</div>
+          <div class="brand-sub">Hazırlama ve İzlem Aracı</div>
+        </div>
+      </div>
+
+      <div class="header-actions no-print">
+        <button class="btn secondary" type="button">Önizleme</button>
+        <button class="btn primary" type="button" onclick="window.print()">Yazdır</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <nav class="tabs no-print" aria-label="Sekmeler">
+      <button class="tab-btn active" type="button" data-target="panel-hasta">Hasta Bilgisi</button>
+      <button class="tab-btn" type="button" data-target="panel-degerlendirme">Değerlendirme</button>
+      <button class="tab-btn" type="button" data-target="panel-plan">Bakım Planı</button>
+      <button class="tab-btn" type="button" data-target="panel-izlem">İzlem</button>
+    </nav>
+
+    <main>
+      <section id="panel-hasta" class="panel active">
+        <div class="card">
+          <div class="card-header">
+            <h2>Hasta ve Kayıt Bilgileri</h2>
+            <span class="chip">Güncel</span>
+          </div>
+
+          <div class="grid wide">
+            <div class="field">
+              <label for="hastaAdi">Hasta Adı Soyadı</label>
+              <input id="hastaAdi" type="text" value="Ayşe Demir" />
+            </div>
+
+            <div class="field">
+              <label for="hastaYas">Yaş</label>
+              <input id="hastaYas" type="number" value="68" />
+            </div>
+
+            <div class="field">
+              <label for="hastaCinsiyet">Cinsiyet</label>
+              <select id="hastaCinsiyet">
+                <option selected>Kadın</option>
+                <option>Erkek</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="yatakNo">Yatak No</label>
+              <input id="yatakNo" type="text" value="12B" />
+            </div>
+
+            <div class="field">
+              <label for="tanı">Tanı</label>
+              <input id="tanı" type="text" value="Hipertansiyon ve solunum sıkıntısı" />
+            </div>
+
+            <div class="field">
+              <label for="servis">Servis / Birim</label>
+              <input id="servis" type="text" value="Dahiliye Koğuşu" />
+            </div>
+
+            <div class="field">
+              <label for="basvuru">Başvuru Nedeni</label>
+              <textarea id="basvuru">Öksürük, nefes darlığı ve halsizlik şikâyeti.</textarea>
+            </div>
+
+            <div class="field">
+              <label for="not">Özet Not</label>
+              <textarea id="not">Hasta dinlenme esnasında nefes darlığı yaşamaktadır. Solunum desteği ve sıvı takibi gereklidir.</textarea>
+            </div>
+          </div>
+
+          <div class="row-actions">
+            <button class="btn success" type="button" onclick="showSave()">Kaydet</button>
+            <button class="btn ghost" type="button">Şablon Yükle</button>
+            <span id="saveIndicator" class="save-indicator">Kaydedildi</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-degerlendirme" class="panel">
+        <div class="card">
+          <div class="card-header">
+            <h2>Değerlendirme</h2>
+            <span class="chip">Klinik Gözlem</span>
+          </div>
+
+          <div class="grid wide">
+            <div class="field">
+              <label for="agri">Ağrı</label>
+              <select id="agri">
+                <option>Yok</option>
+                <option selected>Orta</option>
+                <option>Şiddetli</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="solunum">Solunum</label>
+              <select id="solunum">
+                <option>Normal</option>
+                <option selected>Hızlı</option>
+                <option>Dispne</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="sivilce">Hidrasyon</label>
+              <select id="sivilce">
+                <option>Dengeli</option>
+                <option selected>Azalmış</option>
+                <option>Şiddetli</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="hissedilen">Duygusal Durum</label>
+              <select id="hissedilen">
+                <option>Anksiyete var</option>
+                <option selected>Endişeli</option>
+                <option>Stabil</option>
+              </select>
+            </div>
+          </div>
+
+          <h3 class="subhead">Tanı / Risk Alanları</h3>
+          <div class="diag-box">
+            <label class="diag-item selected"><input type="checkbox" checked /> Solunum yetmezliği riski</label>
+            <label class="diag-item selected"><input type="checkbox" checked /> Sıvı eksikliği riski</label>
+            <label class="diag-item"><input type="checkbox" /> Enfeksiyon riski</label>
+            <label class="diag-item selected"><input type="checkbox" checked /> Aktivite intoleransı</label>
+            <label class="diag-item"><input type="checkbox" /> Duyu bozukluğu</label>
+            <label class="diag-item"><input type="checkbox" /> Konstipasyon</label>
+          </div>
+
+          <h3 class="subhead">Kırılgan Alanlar</h3>
+          <div class="domain-group open">
+            <div class="domain-head">
+              <span>Hareketlilik</span>
+              <span class="meta">2 alan</span>
+            </div>
+            <div class="domain-body">
+              <div class="toggle-row">
+                <label><input type="checkbox" checked /> Mobilite azalmış</label>
+                <label><input type="checkbox" /> Düşme riski</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="domain-group">
+            <div class="domain-head">
+              <span>Beslenme</span>
+              <span class="meta">1 alan</span>
+            </div>
+            <div class="domain-body">
+              <div class="toggle-row">
+                <label><input type="checkbox" checked /> Oral alım azaldı</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="selected-list">
+            <span class="tag">Nefes yolu açıklığı <button type="button">×</button></span>
+            <span class="tag">Sıvı takibi <button type="button">×</button></span>
+            <span class="tag">Anksiyete yönetimi <button type="button">×</button></span>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-plan" class="panel">
+        <div class="card">
+          <div class="card-header">
+            <h2>Bakım Planı</h2>
+            <span class="chip">Eylem planı</span>
+          </div>
+
+          <div class="plan-block">
+            <div class="plan-head">
+              <h3>Solunum ve Oksijenasyon</h3>
+              <small>Hedef: Nefes darlığının azalması</small>
+            </div>
+            <div class="plan-body">
+              <div class="group-label">Girişim</div>
+              <div class="intervention-list">
+                <div class="intervention-item">
+                  <textarea>Hasta pozisyonunu uygun şekilde ayarlayın; yarım oturma pozisyonu verin.</textarea>
+                </div>
+                <div class="intervention-item">
+                  <textarea>Solunum sayısını ve derinliğini 4 saatlik aralıklarla izleyin.</textarea>
+                </div>
+              </div>
+
+              <div class="group-label">İzlem</div>
+              <div class="eval-list">
+                <div class="eval-item">
+                  <textarea>Hasta nefes darlığı yaşamayan, rahat nefes alan bir duruma ulaştı mı?</textarea>
+                </div>
+              </div>
+
+              <div class="score-box">
+                <span>Hedef başarı oranı</span>
+                <strong>85%</strong>
+                <span>Durum: Stabil</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="plan-block">
+            <div class="plan-head">
+              <h3>Hidrasyon ve Beslenme</h3>
+              <small>Hedef: Sıvı alımının korunması</small>
+            </div>
+            <div class="plan-body">
+              <div class="group-label">Girişim</div>
+              <div class="intervention-list">
+                <div class="intervention-item">
+                  <textarea>Günlük sıvı alımını kayıt edin ve hekim önerisine göre planlayın.</textarea>
+                </div>
+                <div class="intervention-item">
+                  <textarea>Oral alımı destekleyici beslenme önerileri verin ve öğün takibini yapın.</textarea>
+                </div>
+              </div>
+
+              <div class="group-label">İzlem</div>
+              <div class="eval-list">
+                <div class="eval-item">
+                  <textarea>Hasta günlük sıvı ve yemek alımını düzenli olarak sürdürüyor mu?</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-izlem" class="panel">
+        <div class="card">
+          <div class="card-header">
+            <h2>İzlem ve Sonuç</h2>
+            <span class="chip">İlerleme Takibi</span>
+          </div>
+
+          <div class="summary-box">
+            <h3>Özet</h3>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <span class="label">Hasta</span>
+                <span class="value">Ayşe Demir</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">Tanı</span>
+                <span class="value">Hipertansiyon + Solunum sıkıntısı</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">En kritik alan</span>
+                <span class="value">Solunum yolu</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">Son durum</span>
+                <span class="value">Gelişme gösteriyor</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row-actions">
+            <button class="btn warn" type="button">İzlem Ekle</button>
+            <button class="btn ghost" type="button">Rapor Oluştur</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="print-area">
+    <h1>Hemşirelik Bakım Planı</h1>
+    <p><strong>Hasta:</strong> Ayşe Demir</p>
+    <p><strong>Tanı:</strong> Hipertansiyon ve solunum sıkıntısı</p>
+    <p><strong>Servis:</strong> Dahiliye Koğuşu</p>
+    <p><strong>Özet:</strong> Solunum semptomlarında azalma hedeflenmiştir; hidrasyon ve ağrı yönetimi izlenmektedir.</p>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.dataset.target;
+        document.querySelectorAll('.panel').forEach(panel => {
+          panel.classList.toggle('active', panel.id === target);
+        });
+      });
+    });
+
+    document.querySelectorAll('.diag-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const input = item.querySelector('input');
+        input.checked = !input.checked;
+        item.classList.toggle('selected', input.checked);
+      });
+    });
+
+    document.querySelectorAll('.domain-head').forEach(head => {
+      head.addEventListener('click', () => {
+        const parent = head.parentElement;
+        parent.classList.toggle('open');
+      });
+    });
+
+    function showSave() {
+      const indicator = document.getElementById('saveIndicator');
+      indicator.classList.add('show');
+      setTimeout(() => indicator.classList.remove('show'), 1200);
+    }
+  </script>
+</body>
+</html>
